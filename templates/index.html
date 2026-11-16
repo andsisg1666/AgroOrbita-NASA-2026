@@ -31,7 +31,7 @@ gap:22px; box-shadow:0 2px 8px #ddd;">
         🌱 Mis terrenos
     </a>
 
-    <a href="{{ url_for('registrar_terreno') }}">
+    <a href="{{ url_for('mostrar_formulario_terreno') }}">
         ➕ Registrar terreno
     </a>
 
@@ -59,15 +59,6 @@ gap:22px; box-shadow:0 2px 8px #ddd;">
 </nav>
 
 
-    <header class="encabezado">
-        <h2>🌎 AgroÓrbita</h2>
-
-        <nav>
-            <a href="#inicio">Inicio</a>
-            <a href="#modulos">Módulos</a>
-        </nav>
-    </header>
-
     <main>
 
         <section class="portada" id="inicio">
@@ -94,21 +85,27 @@ gap:22px; box-shadow:0 2px 8px #ddd;">
 
             <div class="tarjetas">
 
-                <div class="tarjeta">
-                    <h3>🌾 Gestión de terrenos</h3>
-                    <p>
-                        Registra y administra
-                        terrenos agrícolas.
-                    </p>
-                </div>
+            
+<a class="tarjeta"
+   href="{{ url_for('listar_terrenos') }}"
+   style="display:block; text-decoration:none; color:inherit;">
+    <h3>🌾 Gestión de terrenos</h3>
+    <p>
+        Registra y administra
+        terrenos agrícolas.
+    </p>
+</a>
 
-                <div class="tarjeta">
-                    <h3>🌦️ Datos climáticos NASA</h3>
-                    <p>
-                        Consulta información
-                        histórica del clima.
-                    </p>
-                </div>
+<a class="tarjeta"
+   href="{{ url_for('listar_terrenos') }}"
+   style="display:block; text-decoration:none; color:inherit;">
+    <h3>🌦️ Datos climáticos NASA</h3>
+    <p>
+        Selecciona tu terreno y consulta
+        información histórica del clima.
+    </p>
+</a>
+
 
                 <div class="tarjeta">
                     <h3>📊 Rotación de cultivos</h3>

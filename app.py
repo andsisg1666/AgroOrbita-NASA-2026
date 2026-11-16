@@ -125,10 +125,7 @@ def mostrar_formulario_terreno():
     finally:
         conexion.close()
 
-    return (
-        "Terreno registrado correctamente en SQLite. "
-        "<a href='/registrar-terreno'>Registrar otro terreno</a>"
-    )
+    return redirect(url_for("listar_terrenos"))
 
 
 # Mostrar todos los terrenos registrados
@@ -336,10 +333,9 @@ def registrar_usuario():
     finally:
         conexion.close()
 
-    return (
-        "Cuenta creada correctamente en AgroÓrbita. "
-        "<a href='/registrar-usuario'>Volver al registro</a>"
-    ), 201
+   
+    return redirect(url_for("iniciar_sesion"))
+
 
 
 # PASO 14.3: Inicio de sesión de usuarios

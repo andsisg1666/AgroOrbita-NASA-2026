@@ -1,0 +1,91 @@
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>AgroÓrbita - NASA 2026</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='estilo.css') }}">
+</head>
+
+<body>
+
+    <header class="encabezado">
+        <h2>🌎 AgroÓrbita</h2>
+
+        <nav>
+            <a href="#inicio">Inicio</a>
+            <a href="#modulos">Módulos</a>
+        </nav>
+    </header>
+
+    <main>
+
+        <section class="portada" id="inicio">
+
+            <h1>🌱 Agricultura inteligente
+                desde el espacio
+            </h1>
+
+            <p>
+                Una plataforma web que conecta
+                la agricultura con información
+                climática de la NASA.
+            </p>
+
+            <a href="#modulos" class="boton">
+                Explorar proyecto
+            </a>
+
+        </section>
+
+        <section class="modulos" id="modulos">
+
+            <h2>Nuestros módulos</h2>
+
+            <div class="tarjetas">
+
+                <div class="tarjeta">
+                    <h3>🌾 Gestión de terrenos</h3>
+                    <p>
+                        Registra y administra
+                        terrenos agrícolas.
+                    </p>
+                </div>
+
+                <div class="tarjeta">
+                    <h3>🌦️ Datos climáticos NASA</h3>
+                    <p>
+                        Consulta información
+                        histórica del clima.
+                    </p>
+                </div>
+
+                <div class="tarjeta">
+                    <h3>📊 Rotación de cultivos</h3>
+                    <p>
+                        Explora alternativas para
+                        una agricultura sostenible.
+                    </p>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+        <p>
+            AgroÓrbita 2026 |
+            Proyecto académico con Flask y SQLite
+        </p>
+    </footer>
+
+</body>
+</html>

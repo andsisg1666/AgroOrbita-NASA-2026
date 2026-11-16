@@ -1,0 +1,234 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Editar terreno - AgroÓrbita</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='estilo.css') }}">
+
+    <style>
+        .contenedor-edicion {
+            max-width: 850px;
+            margin: 50px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 18px;
+            box-shadow: 0 5px 25px #dce8df;
+        }
+
+        .contenedor-edicion h1 {
+            color: #17653c;
+            margin-bottom: 12px;
+        }
+
+        .descripcion {
+            color: #607568;
+            margin-bottom: 25px;
+        }
+
+        .aviso {
+            background: #e8f5ec;
+            color: #17653c;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .grupo {
+            margin-bottom: 20px;
+        }
+
+        .grupo label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #245b3e;
+        }
+
+        .grupo input,
+        .grupo select {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #cbded1;
+            border-radius: 9px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .fila {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .acciones {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .boton-guardar {
+            background: #16854c;
+            color: white;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .boton-cancelar {
+            background: #e5f0e9;
+            color: #245b3e;
+            padding: 15px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="encabezado">
+        <h2>🌎 AgroÓrbita</h2>
+        <nav>
+            <a href="/">Inicio</a>
+            <a href="/terrenos">Mis terrenos</a>
+        </nav>
+    </header>
+
+    <main class="contenedor-edicion">
+
+        <h1>✏️ Editar terreno agrícola</h1>
+
+        <p class="descripcion">
+            Modifica la información de tu parcela.
+            Los cambios se guardarán en SQLite.
+        </p>
+
+        <div class="aviso">
+            🌱 Estás editando:
+            <strong>{{ terreno["nombre"] }}</strong>
+        </div>
+
+        <form method="POST"
+              action="{{ url_for('editar_terreno', terreno_id=terreno['id']) }}">
+
+            <div class="grupo">
+                <label>Nombre del terreno</label>
+                <input type="text" name="nombre"
+                       value="{{ terreno['nombre'] }}"
+                       required>
+            </div>
+
+            <div class="grupo">
+                <label>Ubicación</label>
+                <input type="text" name="ubicacion"
+                       value="{{ terreno['ubicacion'] }}"
+                       required>
+            </div>
+
+            <div class="fila">
+                <div class="grupo">
+                    <label>Latitud</label>
+                    <input type="number" name="latitud"
+                           step="any" min="-90" max="90"
+                           value="{{ terreno['latitud'] }}"
+                           required>
+                </div>
+
+                <div class="grupo">
+                    <label>Longitud</label>
+                    <input type="number" name="longitud"
+                           step="any" min="-180" max="180"
+                           value="{{ terreno['longitud'] }}"
+                           required>
+                </div>
+            </div>
+
+            <div class="grupo">
+                <label>Cultivo actual</label>
+                <select name="cultivo_actual" required>
+                    {% for cultivo in ["Maíz", "Papa",
+                       "Arroz", "Trigo", "Frijol", "Otro"] %}
+                    <option value="{{ cultivo }}"
+                        {% if terreno["cultivo_actual"] == cultivo %}
+                        selected
+                        {% endif %}>
+                        {{ cultivo }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="grupo">
+                <label>Tipo de suelo</label>
+                <select name="tipo_suelo" required>
+                    {% for suelo in ["Arenoso",
+                       "Arcilloso", "Franco", "Otro"] %}
+                    <option value="{{ suelo }}"
+                        {% if terreno["tipo_suelo"] == suelo %}
+                        selected
+                        {% endif %}>
+                        {{ suelo }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="grupo">
+                <label>Superficie (hectáreas)</label>
+                <input type="number" name="superficie"
+                       min="0.01" step="any"
+                       value="{{ terreno['superficie'] }}"
+                       required>
+            </div>
+
+            <div class="grupo">
+                <label>Prioridad agrícola</label>
+                <select name="prioridad" required>
+                    {% for opcion in ["Ahorrar agua",
+                       "Mejorar el suelo",
+                       "Diversificar cultivos"] %}
+                    <option value="{{ opcion }}"
+                        {% if terreno["prioridad"] == opcion %}
+                        selected
+                        {% endif %}>
+                        {{ opcion }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="acciones">
+                <button type="submit"
+                        class="boton-guardar">
+                    💾 Guardar cambios
+                </button>
+
+                <a href="{{ url_for('listar_terrenos') }}"
+                   class="boton-cancelar">
+                    Cancelar
+                </a>
+            </div>
+
+        </form>
+
+    </main>
+
+    <footer>
+        AgroÓrbita NASA 2026 |
+        Proyecto académico con Flask y SQLite
+    </footer>
+
+</body>
+</html>

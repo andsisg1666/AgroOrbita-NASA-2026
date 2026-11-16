@@ -1,0 +1,490 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clima agrícola | AgroÓrbita NASA 2026</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f1f8f3;
+            color: #244735;
+        }
+
+        header {
+            background: white;
+            padding: 22px;
+            text-align: center;
+            box-shadow: 0 2px 8px #00000012;
+        }
+
+        header h1 {
+            color: #087b46;
+            margin: 0;
+        }
+
+        main {
+            max-width: 1050px;
+            margin: 35px auto;
+            padding: 20px;
+        }
+
+        .tarjeta {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px #00000012;
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            color: #12683e;
+        }
+
+        .resumen {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fit, minmax(180px, 1fr)
+            );
+            gap: 15px;
+        }
+
+        .indicador {
+            background: #e8f5ec;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .indicador h3 {
+            font-size: 15px;
+            color: #28634a;
+        }
+
+        .indicador p {
+            font-size: 22px;
+            font-weight: bold;
+            color: #087b46;
+        }
+
+        .tabla-contenedor {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #17643e;
+            color: white;
+            padding: 14px;
+        }
+
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #dce9df;
+        }
+
+        tr:nth-child(even) {
+            background: #f0f7f2;
+        }
+
+        canvas {
+            width: 100%;
+            max-height: 350px;
+        }
+
+        .boton {
+            display: inline-block;
+            padding: 13px 22px;
+            background: #11864d;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #dcefe2;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>🌍 AgroÓrbita NASA 2026</h1>
+    <p>Información climática para la agricultura</p>
+</header>
+
+<main>
+
+    <section class="tarjeta">
+        <h2>🌱 Información de la parcela</h2>
+        <p><strong>Terreno:</strong> {{ terreno }}</p>
+        <p><strong>Periodo:</strong> {{ periodo }}</p>
+        <p>
+            Fuente: NASA POWER -
+            Datos climáticos históricos
+        </p>
+    </section>
+
+    <section class="tarjeta">
+        <h2>📊 Variables climáticas</h2>
+
+        <div class="resumen">
+            <div class="indicador">
+                <h3>🌡️ Temperatura</h3>
+                <p>°C</p>
+                <small>Media diaria</small>
+            </div>
+
+            <div class="indicador">
+                <h3>🌧️ Precipitación</h3>
+                <p>mm/día</p>
+                <small>Precipitación corregida</small>
+            </div>
+
+            <div class="indicador">
+                <h3>☀️ Radiación solar</h3>
+                <p>MJ/m²/día</p>
+                <small>Radiación diaria</small>
+            </div>
+        </div>
+    </section>
+
+    <section class="tarjeta">
+        <h2>📋 Registro climático diario</h2>
+
+        <div class="tabla-contenedor">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Temperatura (°C)</th>
+                        <th>Precipitación (mm/día)</th>
+                        <th>Radiación (MJ/m²/día)</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for fecha, valor in temperatura.items() %}
+                    <tr>
+                        <td>
+                            {{ fecha[6:8] }}/{{ fecha[4:6] }}/{{ fecha[0:4] }}
+                        </td>
+                        <td>{{ valor }}</td>
+                        <td>{{ precipitacion.get(fecha, "—") }}</td>
+                        <td>{{ radiacion_solar.get(fecha, "—") }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="tarjeta">
+        <h2>📈 Gráfico de temperatura</h2>
+        <canvas id="graficoTemperatura"></canvas>
+        <p>
+            Evolución de la temperatura media diaria
+            durante el periodo consultado.
+        </p>
+    </section>
+
+<!-- GRAFICO DE PRECIPITACION -->
+<section class="tarjeta">
+    <h2>🌧️ Gráfico de precipitación</h2>
+
+    <canvas id="graficoPrecipitacion"></canvas>
+
+    <p>
+        Cantidad de precipitación diaria registrada
+        durante el periodo consultado (mm/día).
+    </p>
+</section>
+
+<!-- GRAFICO DE RADIACION SOLAR -->
+<section class="tarjeta">
+    <h2>☀️ Gráfico de radiación solar</h2>
+
+    <canvas id="graficoRadiacion"></canvas>
+
+    <p>
+        Radiación solar diaria registrada
+        durante el periodo consultado (MJ/m²/día).
+    </p>
+</section>
+
+<!-- ANALISIS CLIMATICO AGRICOLA -->
+<section class="tarjeta">
+
+    <h2>🌱 Análisis climático de mi parcela</h2>
+
+    <p>
+        Resumen de las condiciones climáticas
+        históricas del terreno durante el
+        periodo consultado.
+    </p>
+
+    <h3>🌡️ Temperatura promedio</h3>
+    <p id="promedioTemperatura">Calculando...</p>
+
+    <h3>🌧️ Precipitación acumulada</h3>
+    <p id="totalPrecipitacion">Calculando...</p>
+
+    <h3>☀️ Radiación solar promedio</h3>
+    <p id="promedioRadiacion">Calculando...</p>
+
+    <h3>📋 Interpretación climática</h3>
+    <p id="interpretacionClima">
+        Preparando el análisis de los datos...
+    </p>
+
+</section>
+
+    <a class="boton" href="{{ url_for('listar_terrenos') }}">
+        ← Volver a mis terrenos
+    </a>
+
+</main>
+
+<footer>
+    AgroÓrbita NASA 2026 | Flask + SQLite + NASA POWER
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script id="datos-temperatura" type="application/json">
+    {{ temperatura | tojson }}
+</script>
+
+<script>
+    const temperaturas = JSON.parse(
+    document.getElementById("datos-temperatura").textContent
+);
+
+
+    const fechas = Object.keys(temperaturas);
+    const valores = Object.values(temperaturas);
+
+    if (typeof Chart !== "undefined") {
+        new Chart(
+            document.getElementById("graficoTemperatura"),
+            {
+                type: "line",
+                data: {
+                    labels: fechas,
+                    datasets: [{
+                        label: "Temperatura (°C)",
+                        data: valores,
+                        borderColor: "#13884c",
+                        backgroundColor: "#bcebd0",
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: "Temperatura (°C)"
+                            }
+                        }
+                    }
+                }
+            }
+        );
+    }
+</script>
+
+<!-- DATOS DE PRECIPITACION Y RADIACION -->
+<script id="datos-precipitacion" type="application/json">
+    {{ precipitacion | tojson }}
+</script>
+
+<script id="datos-radiacion" type="application/json">
+    {{ radiacion_solar | tojson }}
+</script>
+
+<script>
+    // Obtener los datos enviados por Flask
+    const lluvia = JSON.parse(
+        document.getElementById("datos-precipitacion").textContent
+    );
+
+    const radiacion = JSON.parse(
+        document.getElementById("datos-radiacion").textContent
+    );
+
+    // Organizar las fechas
+    const fechasClima = Object.keys(lluvia).sort();
+
+    const etiquetasClima = fechasClima.map(fecha =>
+        fecha.slice(6, 8) + "/" + fecha.slice(4, 6)
+    );
+
+    // GRAFICO DE PRECIPITACION
+    if (typeof Chart !== "undefined") {
+        new Chart(
+            document.getElementById("graficoPrecipitacion"),
+            {
+                type: "bar",
+                data: {
+                    labels: etiquetasClima,
+                    datasets: [{
+                        label: "Precipitación (mm/día)",
+                        data: fechasClima.map(fecha => lluvia[fecha]),
+                        backgroundColor: "#38a9e0",
+                        borderColor: "#187cba",
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: "Precipitación (mm/día)"
+                            }
+                        }
+                    }
+                }
+            }
+        );
+
+        // GRAFICO DE RADIACION SOLAR
+        new Chart(
+            document.getElementById("graficoRadiacion"),
+            {
+                type: "line",
+                data: {
+                    labels: etiquetasClima,
+                    datasets: [{
+                        label: "Radiación solar (MJ/m²/día)",
+                        data: fechasClima.map(fecha => radiacion[fecha]),
+                        borderColor: "#e9a317",
+                        backgroundColor: "#ffe6a3",
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: "Radiación solar (MJ/m²/día)"
+                            }
+                        }
+                    }
+                }
+            }
+        );
+    }
+</script>
+
+<!-- CALCULOS DEL ANALISIS CLIMATICO -->
+<script>
+(function () {
+
+    // Leer los datos enviados por Flask
+    const temp = JSON.parse(
+        document.getElementById("datos-temperatura").textContent
+    );
+
+    const lluviaDatos = JSON.parse(
+        document.getElementById("datos-precipitacion").textContent
+    );
+
+    const solarDatos = JSON.parse(
+        document.getElementById("datos-radiacion").textContent
+    );
+
+    // Convertir los datos a numeros validos
+    function valoresValidos(datos) {
+        return Object.values(datos)
+            .filter(v => v !== null && v !== "")
+            .map(Number)
+            .filter(v => Number.isFinite(v) && v !== -999);
+    }
+
+    const temperaturas = valoresValidos(temp);
+    const lluvias = valoresValidos(lluviaDatos);
+    const radiaciones = valoresValidos(solarDatos);
+
+    // Calcular el promedio
+    function promedio(valores) {
+        if (valores.length === 0) return null;
+
+        const suma = valores.reduce((a, b) => a + b, 0);
+        return suma / valores.length;
+    }
+
+    const temperaturaMedia = promedio(temperaturas);
+    const lluviaTotal = lluvias.length
+        ? lluvias.reduce((a, b) => a + b, 0)
+        : null;
+    const radiacionMedia = promedio(radiaciones);
+
+    // Mostrar los resultados
+    document.getElementById("promedioTemperatura").textContent =
+        temperaturaMedia === null
+            ? "Sin datos disponibles"
+            : temperaturaMedia.toFixed(2) + " °C";
+
+    document.getElementById("totalPrecipitacion").textContent =
+        lluviaTotal === null
+            ? "Sin datos disponibles"
+            : lluviaTotal.toFixed(2) + " mm";
+
+    document.getElementById("promedioRadiacion").textContent =
+        radiacionMedia === null
+            ? "Sin datos disponibles"
+            : radiacionMedia.toFixed(2) + " MJ/m²/día";
+
+    // Interpretacion descriptiva
+    const interpretacion =
+        document.getElementById("interpretacionClima");
+
+    if (temperaturaMedia !== null &&
+        lluviaTotal !== null &&
+        radiacionMedia !== null) {
+
+        interpretacion.textContent =
+            "Durante el periodo consultado, la temperatura " +
+            "promedio fue de " + temperaturaMedia.toFixed(2) +
+            " °C, la precipitacion acumulada fue de " +
+            lluviaTotal.toFixed(2) +
+            " mm y la radiacion solar promedio fue de " +
+            radiacionMedia.toFixed(2) +
+            " MJ/m²/día. Estos resultados describen " +
+            "condiciones climaticas historicas, no pronosticos.";
+    } else {
+        interpretacion.textContent =
+            "No hay suficientes datos validos para " +
+            "completar el analisis climatico.";
+    }
+
+})();
+</script>
+
+</body>
+</html>

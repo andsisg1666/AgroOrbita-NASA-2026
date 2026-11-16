@@ -1,0 +1,359 @@
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Mis terrenos - AgroÓrbita NASA 2026</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='estilo.css') }}">
+
+    <style>
+        .contenedor {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 25px;
+        }
+
+        .titulo-seccion {
+            text-align: center;
+            color: #17653c;
+            margin-bottom: 15px;
+        }
+
+        .descripcion {
+            text-align: center;
+            color: #607568;
+            margin-bottom: 30px;
+        }
+
+        .panel {
+            background: white;
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0 5px 25px #dce8df;
+        }
+
+        .barra-superior {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .contador {
+            background: #e4f4e9;
+            color: #17653c;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .boton-nuevo {
+            background: #16854c;
+            color: white;
+            padding: 13px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .tabla-contenedor {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid #dce8df;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 0;
+        }
+
+        thead {
+            background: #17653c;
+            color: white;
+        }
+
+        th, td {
+            padding: 8px 6px;
+            text-align: left;
+            border-bottom: 1px solid #e5eee8;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f2f9f4;
+        }
+
+        tbody tr:hover {
+            background: #e7f5eb;
+        }
+
+        .cultivo {
+            background: #daf1e1;
+            color: #17653c;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .sin-registros {
+            padding: 40px;
+            text-align: center;
+            color: #607568;
+        }
+
+        .nota {
+            margin-top: 25px;
+            padding: 18px;
+            background: #eaf5f8;
+            border-radius: 10px;
+            color: #245b65;
+        }
+
+        .volver {
+            display: inline-block;
+            margin-top: 25px;
+            color: #17653c;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        @media (max-width: 600px) {
+            .contenedor {
+                margin: 20px auto;
+                padding: 15px;
+            }
+
+            .panel {
+                padding: 15px;
+            }
+    
+        }
+    
+.boton-editar {
+    display: inline-block;
+    background-color: #e5f0e9;
+    color: #17653c;
+    padding: 9px 15px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.boton-editar:hover {
+    background-color: #c7e9d2;
+}
+ 
+
+/* Botones para editar y eliminar terrenos */
+
+.acciones-tabla {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.acciones-tabla form {
+    margin: 0;
+}
+
+.boton-eliminar {
+    background-color: #fde8e8;
+    color: #b42318;
+    padding: 9px 15px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.boton-eliminar:hover {
+    background-color: #f9caca;
+}
+
+    </style>
+
+</head>
+
+<body>
+
+    <header class="encabezado">
+        <h2>🌎 AgroÓrbita</h2>
+
+        <nav>
+            <a href="/">Inicio</a>
+            <a href="/registrar-terreno">Registrar terreno</a>
+            <a href="/terrenos">Mis terrenos</a>
+        
+<form action="{{ url_for('cerrar_sesion') }}"
+      method="POST"
+      style="display: inline; margin: 0;">
+
+    <button type="submit"
+            style="background: #dc3545;
+                   color: white;
+                   border: none;
+                   padding: 9px 15px;
+                   border-radius: 8px;
+                   cursor: pointer;
+                   font-weight: bold;">
+        🚪 Cerrar sesión
+    </button>
+
+</form>
+
+        </nav>
+    </header>
+
+    <main class="contenedor">
+
+        <h1 class="titulo-seccion">
+            🌱 Mis terrenos agrícolas
+        </h1>
+
+        <p class="descripcion">
+            Consulta las parcelas agrícolas registradas
+            en nuestra base de datos SQLite.
+        </p>
+
+        <section class="panel">
+
+            <div class="barra-superior">
+
+                <div class="contador">
+                    📊 Terrenos registrados:
+                    {{ terrenos|length }}
+                </div>
+
+                <a href="/registrar-terreno"
+                   class="boton-nuevo">
+                    + Registrar nuevo terreno
+                </a>
+
+            </div>
+
+            {% if terrenos %}
+
+            <div class="tabla-contenedor">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Terreno</th>
+                            <th>Ubicación</th>
+                            <th>Latitud</th>
+                            <th>Longitud</th>
+                            <th>Cultivo</th>
+                            <th>Suelo</th>
+                            <th>Superficie (ha)</th>
+                            <th>Prioridad</th>
+                            <th>Acciones</th>
+
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for terreno in terrenos %}
+
+                        <tr>
+                            <td>{{ terreno["id"] }}</td>
+                            <td>{{ terreno["nombre"] }}</td>
+                            <td>{{ terreno["ubicacion"] }}</td>
+                            <td>{{ terreno["latitud"] }}</td>
+                            <td>{{ terreno["longitud"] }}</td>
+
+                            <td>
+                                <span class="cultivo">
+                                    {{ terreno["cultivo_actual"] }}
+                                </span>
+                            </td>
+
+                            <td>{{ terreno["tipo_suelo"] }}</td>
+                            <td>{{ terreno["superficie"] }}</td>
+                            <td>{{ terreno["prioridad"] }}</td>
+
+
+<td>
+    <div class="acciones-tabla">
+
+<a href="{{ url_for('consultar_clima', terreno_id=terreno['id']) }}"
+   style="display:inline-block; padding:9px 12px; background:#dff1fa; color:#155d70; border-radius:7px; text-decoration:none; font-weight:bold;">
+    🌤️ Consultar clima
+</a>
+
+        <a href="{{ url_for('editar_terreno', terreno_id=terreno['id']) }}"
+           class="boton-editar">
+            ✏️ Editar
+        </a>
+
+        <form method="POST"
+              action="{{ url_for('eliminar_terreno', terreno_id=terreno['id']) }}"
+              onsubmit="return confirm('¿Estás seguro de eliminar este terreno?');">
+
+            <button type="submit" class="boton-eliminar">
+                🗑️ Eliminar
+            </button>
+
+        </form>
+
+    </div>
+</td>
+
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="sin-registros">
+                <h3>🌱 Todavía no hay terrenos registrados</h3>
+                <p>
+                    Comienza agregando tu primera parcela agrícola.
+                </p>
+            </div>
+
+            {% endif %}
+         
+<div class="nota">
+    🛰️ AgroÓrbita NASA 2026: Consulta información
+    climática histórica de tus terrenos mediante
+    NASA POWER. Accede a datos de temperatura,
+    precipitación y radiación solar desde el
+    botón «Consultar clima».
+</div>
+
+
+            <a href="/" class="volver">
+                ← Volver al inicio
+            </a>
+
+        </section>
+
+    </main>
+
+    <footer>
+        AgroÓrbita NASA 2026 |
+        Proyecto académico con Flask y SQLite
+    </footer>
+
+</body>
+</html>

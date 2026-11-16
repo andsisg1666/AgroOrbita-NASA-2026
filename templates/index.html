@@ -15,6 +15,50 @@
 
 <body>
 
+<!-- MENÚ PRINCIPAL AGROÓRBITA -->
+<nav style="background:white; padding:20px;
+display:flex; justify-content:center;
+align-items:center; flex-wrap:wrap;
+gap:22px; box-shadow:0 2px 8px #ddd;">
+
+    <a href="/" style="color:#146c43;">
+        🏠 Inicio
+    </a>
+
+    {% if session.get("usuario_id") %}
+
+    <a href="{{ url_for('listar_terrenos') }}">
+        🌱 Mis terrenos
+    </a>
+
+    <a href="{{ url_for('registrar_terreno') }}">
+        ➕ Registrar terreno
+    </a>
+
+    <form method="POST"
+          action="{{ url_for('cerrar_sesion') }}">
+        <button type="submit"
+                style="background:#dc3545;
+                color:white; border:0;
+                border-radius:8px; padding:10px;">
+            🚪 Cerrar sesión
+        </button>
+    </form>
+
+    {% else %}
+
+    <a href="{{ url_for('registrar_usuario') }}">
+        📝 Crear cuenta
+    </a>
+
+    <a href="{{ url_for('iniciar_sesion') }}">
+        🔐 Iniciar sesión
+    </a>
+
+    {% endif %}
+</nav>
+
+
     <header class="encabezado">
         <h2>🌎 AgroÓrbita</h2>
 
